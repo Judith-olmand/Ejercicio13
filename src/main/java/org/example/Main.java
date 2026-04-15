@@ -1,17 +1,51 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    static void main() {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        IO.println(String.format("Hello and welcome!"));
+import java.sql.*;
+import java.util.Scanner;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            IO.println("i = " + i);
+public class Main {
+    public static void main(String[] args) {
+        String sqlDepartamento;
+        String sqlEmpleado;
+
+        try (Connection conn = DriverManager.getConnection(
+                DBConfig.getUrl(),
+                DBConfig.getUser(),
+                DBConfig.getPassword()); Statement statement = conn.createStatement()){
+
+            // Se intenta borrar las tablas si existen
+            try {
+                sqlDepartamento = "DROP TABLE departamento CASCADE CONSTRAINTS";
+                statement.executeUpdate(sqlDepartamento);
+            } catch (SQLException e1){
+                System.out.println("La tabla Departamento no existe");
+            }
+
+            try {
+                sqlEmpleado = "DROP TABLE empleado CASCADE CONSTRAINTS";
+                statement.executeUpdate(sqlEmpleado);
+            } catch (SQLException e1){
+                System.out.println("La tabla Empleado no existe");
+            }
+
+            sqlDepartamento = "CREATE TABLE departamento (" +
+                    "dep_id NUMBER PRIMARY KEY," +
+                    "nombre VARCHAR2(50))";
+            statement.executeUpdate(sqlDepartamento);
+            System.out.println("Tabla Departamento creada correctamente");
+
+            sqlEmpleado = "CREATE TABLE empleado (" +
+                    "emp_id NUMBER PRIMARY KEY," +
+                    "nombre VARCHAR2(50)," +
+                    "salario NUMBER," +
+                    "dep_id NUMBER," +
+                    "CONSTRAINT FK_departamento FOREIGN KEY (dep_id) REFERENCES departamento (dep_id))";
+            statement.executeUpdate(sqlEmpleado);
+            System.out.println("Tabla empleado creada correctamente");
+
+        } catch (SQLException e) {
+            System.out.println("Error al conectar: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
