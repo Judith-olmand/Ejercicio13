@@ -5,15 +5,23 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        /**
+         * Declaración de variables sin inicialización
+         */
         String sqlDepartamento;
         String sqlEmpleado;
 
+        /**
+         * Conexión mediante Maven
+         */
         try (Connection conn = DriverManager.getConnection(
                 DBConfig.getUrl(),
                 DBConfig.getUser(),
                 DBConfig.getPassword()); Statement statement = conn.createStatement()){
 
-            // Se intenta borrar las tablas si existen
+            /**
+             * Se intentan borrar las tablas si existen
+             */
             try {
                 sqlDepartamento = "DROP TABLE departamento CASCADE CONSTRAINTS";
                 statement.executeUpdate(sqlDepartamento);
@@ -28,6 +36,12 @@ public class Main {
                 System.out.println("La tabla Empleado no existe");
             }
 
+            /**
+             * Inicialización de las variables anteriores
+             * para crear las tablas
+             * primero Departamento y después Empleado
+             * que referencia a la primera con clave foranea
+             */
             sqlDepartamento = "CREATE TABLE departamento (" +
                     "dep_id NUMBER PRIMARY KEY," +
                     "nombre VARCHAR2(50))";
